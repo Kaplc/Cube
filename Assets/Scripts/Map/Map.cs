@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ public struct Pos
     public int x;
     public int z;
 
-    public Pos(int x, int z)
+    public Pos(int z, int x)
     {
         this.x = x;
         this.z = z;
@@ -19,7 +20,7 @@ public class Map : MonoBehaviour
 {
     // 对角线长度
     private float diagonal = 0.35921f;
-    
+
     // 砖块深浅颜色
     public Color color = new Color(103 / 255f, 85 / 255f, 127 / 255f);
     public Color depthColor = new Color(90 / 255f, 77 / 255f, 115 / 255f);
@@ -28,49 +29,68 @@ public class Map : MonoBehaviour
     // 砖块坐标数据集合
     public static List<GameObject[]> TilePos => tilePos;
     private static List<GameObject[]> tilePos = new List<GameObject[]>();
-    
+
     void Awake()
     {
-        CreatMapItem();
+        CreatMapItem(0);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
+        NewMap();
     }
 
-    private void CreatMapItem()
+    private void ReName()
     {
-        for (int j = 0; j < 10; j++)
+        for (int z = 0; z < tilePos.Count; z++)
+        {
+            for (int x = 0; x < tilePos[z].Length; x++)
+            {
+                tilePos[z][x].name = $"{z}-{x}";
+            }
+        }
+    }
+    
+    private void NewMap()
+    {
+        if ((tilePos.Count - 1) - Player.Instance.pos.z < 5)
+        {
+            // 每行偏移2倍0.35921
+            CreatMapItem(diagonal * tilePos.Count / 2);
+        }
+    }
+
+    private void CreatMapItem(float offSetZ)
+    {
+        // 10次x2=20行
+        for (int z = 0; z < 10; z++)
         {
             GameObject[] OddTiles = new GameObject[5];
             // 偶数行
-            for (int i = 0; i < 5; i++)
+            for (int x = 0; x < 5; x++)
             {
                 GameObject tile = Instantiate(Resources.Load<GameObject>("Tile"), new Vector3(0, 0, 0), Quaternion.Euler(-90, 45, 0), transform);
                 // 每个方块偏移0.35
-                tile.transform.position = new Vector3(diagonal + i * diagonal, 0, j * diagonal);
+                tile.transform.position = new Vector3(diagonal + x * diagonal, 0, z * diagonal + offSetZ);
                 // rgb数值/255f
                 tile.GetComponent<MeshRenderer>().material.color = depthColor;
                 tile.transform.Find("normal_a2").GetComponent<MeshRenderer>().material.color = depthColor;
-                // 命名
-                tile.name = $"({j * 2},{i})";
 
-                OddTiles[i] = tile;
+                OddTiles[x] = tile;
             }
 
             tilePos.Add(OddTiles);
 
             // 奇数行 
             GameObject[] evenTiles = new GameObject[6];
-            for (int i = 0; i < 6; i++)
+            for (int x = 0; x < 6; x++)
             {
                 GameObject tile;
-                if (i == 0 || i == 5)
+                if (x == 0 || x == 5)
                 {
                     // 墙
                     tile = Instantiate(Resources.Load<GameObject>("Wall"), new Vector3(0, 0, 0), Quaternion.Euler(-90, 45, 0), transform);
-                    tile.transform.position = new Vector3(diagonal/2 + i * 0.35f, 0, diagonal/2 + j * diagonal);
+                    tile.transform.position = new Vector3(diagonal / 2 + x * diagonal, 0, diagonal / 2 + z * diagonal + offSetZ);
                     tile.GetComponent<MeshRenderer>().material.color = color;
                 }
                 else
@@ -78,16 +98,18 @@ public class Map : MonoBehaviour
                     // 砖块
                     tile = Instantiate(Resources.Load<GameObject>("Tile"), new Vector3(0, 0, 0), Quaternion.Euler(-90, 45, 0), transform);
                     // 先偏移0.175f
-                    tile.transform.position = new Vector3(diagonal/2 + i * diagonal, 0, diagonal/2 + j * diagonal);
+                    tile.transform.position = new Vector3(diagonal / 2 + x * diagonal, 0, diagonal / 2 + z * diagonal + offSetZ);
                     tile.GetComponent<MeshRenderer>().material.color = color;
                     tile.transform.Find("normal_a2").GetComponent<MeshRenderer>().material.color = color;
                 }
-
-                tile.name = $"({j * 2 + 1},{i})";
-                evenTiles[i] = tile;
+                
+                evenTiles[x] = tile;
             }
 
             tilePos.Add(evenTiles);
         }
+        
+        // 重命名
+        ReName();
     }
 }

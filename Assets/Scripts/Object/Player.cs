@@ -1,10 +1,15 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public int Speed;
+    private static Player instance;
+    public static Player Instance => instance;
+    
+    public int speed;
 
     public Pos oldPos = new Pos();
     public Pos pos = new Pos(3, 2);
@@ -15,11 +20,16 @@ public class Player : MonoBehaviour
 
     private float cd = 0;
 
+    private void Awake()
+    {
+        instance = this;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         // 地图坐标位置赋给player
-        mapPos = Map.TilePos[pos.x][pos.z].transform.position;
+        mapPos = Map.TilePos[pos.z][pos.x].transform.position;
         transform.position = new Vector3(mapPos.x, 0.254f / 2, mapPos.z);
         transform.rotation = Quaternion.Euler(new Vector3(0, -45, 0));
     }
@@ -44,19 +54,20 @@ public class Player : MonoBehaviour
         {
             ResetPos();
         }
+        
         if (Input.GetKey(KeyCode.A))
         {
             cd += Time.deltaTime;
             if (cd <= 0.1f) return;
             cd = 0;
-
+            
             oldPos = pos;
             // 向左
-            pos.x++;
+            pos.z++;
             // 奇数行z-1
-            if (pos.x % 2 == 0)
+            if (pos.z % 2 == 0)
             {
-                pos.z--;
+                pos.x--;
             }
 
             // 边界判断
@@ -70,30 +81,31 @@ public class Player : MonoBehaviour
             cd += Time.deltaTime;
             if (cd <= 0.1f) return;
             cd = 0;
-
+            
             oldPos = pos;
             // 向右
-            pos.x++;
+            pos.z++;
             // 奇数行z-1
-            if (pos.x % 2 != 0)
+            if (pos.z % 2 != 0)
             {
-                pos.z++;
+                pos.x++;
             }
 
             if (!MapLimit()) pos = oldPos;
             CreateMark();
         }
 
-        mapPos = Map.TilePos[pos.x][pos.z].transform.position;
-        transform.position = Vector3.Lerp(transform.position, new Vector3(mapPos.x, transform.position.y, mapPos.z), Time.deltaTime * Speed);
+        mapPos = Map.TilePos[pos.z][pos.x].transform.position;
+        transform.position = Vector3.Lerp(transform.position, new Vector3(mapPos.x, transform.position.y, mapPos.z), Time.deltaTime * speed);
         // transform.position = new Vector3(mapPos.x, transform.position.y, mapPos.z);
         
     }
 
     private bool MapLimit()
     {
+        
         // 奇数行的0和 5不能
-        if (pos.x % 2 != 0 && pos.z == 0 || pos.z == 5)
+        if (pos.z % 2 != 0 && pos.x == 0 || pos.x == 5)
         {
             return false;
         }
@@ -104,9 +116,9 @@ public class Player : MonoBehaviour
     private void CreateMark()
     {
         // 获取底部砖块
-        GameObject tile = Map.TilePos[oldPos.x][oldPos.z].transform.Find("normal_a2").gameObject;
+        GameObject tile = Map.TilePos[oldPos.z][oldPos.x].transform.Find("normal_a2").gameObject;
 
-        if (pos.x % 2 == 0)
+        if (pos.z % 2 == 0)
         {
             // 偶数行深色
             tile.GetComponent<MeshRenderer>().material.color = depthColor;
@@ -116,4 +128,5 @@ public class Player : MonoBehaviour
             tile.GetComponent<MeshRenderer>().material.color = color;
         }
     }
+
 }
