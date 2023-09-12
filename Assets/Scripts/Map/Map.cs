@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public struct Pos
 {
@@ -29,6 +31,10 @@ public class Map : MonoBehaviour
     // 砖块坐标数据集合
     public static List<GameObject[]> TilePos => tilePos;
     private static List<GameObject[]> tilePos = new List<GameObject[]>();
+    
+    // 当前掉落行号
+    public static int Zindex = 0;
+    private Coroutine startTileFallDown;
 
     void Awake()
     {
@@ -38,6 +44,47 @@ public class Map : MonoBehaviour
     private void Update()
     {
         NewMap();
+        if (Input.GetKeyUp(KeyCode.O))
+        {
+            StartTileFallDown();
+        }
+
+        if (Player.isOver)
+        {
+            StopTileFallDown();
+        }
+    }
+
+    private void StartTileFallDown()
+    {
+        startTileFallDown = StartCoroutine(TileFallDown());
+    }
+
+    private void StopTileFallDown()
+    {
+        StopCoroutine(startTileFallDown);
+    }
+
+    /// <summary>
+    /// 协程控制砖块掉落
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator TileFallDown()
+    {
+        while (true)
+        {
+            for (int x = 0; x < tilePos[Zindex].Length; x++)
+            {
+                // 添加刚体受重力下落, 并随机旋转
+                Rigidbody tileRigidbody = tilePos[Zindex][x].AddComponent<Rigidbody>();
+                tileRigidbody.AddTorque(new Vector3(Random.Range(1f, 30f), Random.Range(1f, 30f), Random.Range(1f, 30f)) * 20);
+                Destroy(tileRigidbody.gameObject, 2);
+                tilePos[Zindex][x] = null;
+            }
+
+            Zindex++;
+            yield return new WaitForSeconds(0.15f);
+        }
     }
 
     private void ReName()
@@ -46,14 +93,17 @@ public class Map : MonoBehaviour
         {
             for (int x = 0; x < tilePos[z].Length; x++)
             {
-                tilePos[z][x].name = $"{z}-{x}";
+                if (tilePos[z][x])
+                {
+                    tilePos[z][x].name = $"{z}-{x}";
+                }
             }
         }
     }
-    
+
     private void NewMap()
     {
-        if ((tilePos.Count - 1) - Player.Instance.pos.z < 12)
+        if ((tilePos.Count - 1) - Player.Instance.pos.z < 15)
         {
             // 每行偏移2倍0.35921
             CreatMapItem(diagonal * tilePos.Count / 2);
@@ -63,7 +113,7 @@ public class Map : MonoBehaviour
     private void CreatMapItem(float offSetZ)
     {
         // 10次x2=20行
-        for (int z = 0; z < 10; z++)
+        for (int z = 0; z < 6; z++)
         {
             GameObject[] OddTiles = new GameObject[5];
             // 偶数行
@@ -102,13 +152,13 @@ public class Map : MonoBehaviour
                     tile.GetComponent<MeshRenderer>().material.color = color;
                     tile.transform.Find("normal_a2").GetComponent<MeshRenderer>().material.color = color;
                 }
-                
+
                 evenTiles[x] = tile;
             }
 
             tilePos.Add(evenTiles);
         }
-        
+
         // 重命名
         ReName();
     }

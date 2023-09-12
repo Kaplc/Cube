@@ -6,11 +6,11 @@ using UnityEngine;
 public class CameraFollow : MonoBehaviour
 {
     public Player player;
-    public bool follow;
+    public static bool follow;
 
     public float distance;
 
-    public void StartOrStopFollow()
+    public static void StartOrStopFollow()
     {
         follow = !follow;
     }
