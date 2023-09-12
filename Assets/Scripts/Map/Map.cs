@@ -53,7 +53,7 @@ public class Map : MonoBehaviour
     
     private void NewMap()
     {
-        if ((tilePos.Count - 1) - Player.Instance.pos.z < 5)
+        if ((tilePos.Count - 1) - Player.Instance.pos.z < 12)
         {
             // 每行偏移2倍0.35921
             CreatMapItem(diagonal * tilePos.Count / 2);

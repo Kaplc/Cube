@@ -12,7 +12,7 @@ public class Player : MonoBehaviour
     public int speed;
 
     public Pos oldPos = new Pos();
-    public Pos pos = new Pos(3, 2);
+    public Pos pos = new Pos(2, 2);
     private Vector3 mapPos;
 
     private Color depthColor = new Color(235 / 255f, 99 / 255f, 144 / 255f);
