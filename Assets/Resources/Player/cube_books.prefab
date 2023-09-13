@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 9144427823425246948}
   m_Layer: 0
   m_Name: cube_books
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

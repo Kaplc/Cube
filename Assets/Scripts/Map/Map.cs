@@ -5,6 +5,15 @@ using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+
+public enum E_TileType
+{
+    Normal,
+    Null,
+    GroundSpike,
+    SkySpike
+}
+
 public struct Pos
 {
     public int x;
@@ -16,7 +25,6 @@ public struct Pos
         this.z = z;
     }
 }
-
 
 public class Map : MonoBehaviour
 {
@@ -31,14 +39,22 @@ public class Map : MonoBehaviour
     // 砖块坐标数据集合
     public static List<GameObject[]> TilePos => tilePos;
     private static List<GameObject[]> tilePos = new List<GameObject[]>();
-    
+
     // 当前掉落行号
     public static int Zindex = 0;
     private Coroutine startTileFallDown;
 
+    // 砖块类型概率
+    private int prNull = 0;
+    private int prGroundSpike = 0;                
+    private int prSkySpike = 0;
+
     void Awake()
     {
         CreatMapItem(0);
+        prNull += 2;
+        prGroundSpike += 1;
+        prSkySpike += 1;
     }
 
     private void Update()
@@ -78,6 +94,11 @@ public class Map : MonoBehaviour
                 // 添加刚体受重力下落, 并随机旋转
                 Rigidbody tileRigidbody = tilePos[Zindex][x].AddComponent<Rigidbody>();
                 tileRigidbody.AddTorque(new Vector3(Random.Range(1f, 30f), Random.Range(1f, 30f), Random.Range(1f, 30f)) * 20);
+                // 延时销毁
+                if (tileRigidbody.gameObject.CompareTag("GroundSpike") ||tileRigidbody.gameObject.CompareTag("SkySpike") )
+                {
+                    tileRigidbody.GetComponent<Spike>().ObjDestroy();
+                }
                 Destroy(tileRigidbody.gameObject, 2);
                 tilePos[Zindex][x] = null;
             }
@@ -119,12 +140,41 @@ public class Map : MonoBehaviour
             // 偶数行
             for (int x = 0; x < 5; x++)
             {
-                GameObject tile = Instantiate(Resources.Load<GameObject>("Tile"), new Vector3(0, 0, 0), Quaternion.Euler(-90, 45, 0), transform);
+                
+                int pr = Random.Range(1, 101);
+                GameObject tile;
+           
+                if (pr >= 1 && pr <= prNull)
+                {
+                    // 生成空洞
+                    tile = new GameObject();
+                    tile.transform.SetParent(transform);
+                    tile.transform.rotation = Quaternion.Euler(-90, 45, 0);
+                }
+                else if (pr > prNull && pr <= prNull + prGroundSpike)
+                {
+                    // 生成地面陷阱
+                    tile = Instantiate(Resources.Load<GameObject>("Spikes/GroundSpikes"), new Vector3(0, 0, 0), Quaternion.Euler(-90, 45, 0), transform);
+                    // 添加陷阱脚本
+                    tile.AddComponent<Spike>();
+                }
+                else if (pr > prGroundSpike && pr <= prNull + prGroundSpike + prSkySpike)
+                {
+                    // 生成天空陷阱
+                    tile = Instantiate(Resources.Load<GameObject>("Spikes/SkySpikes"), new Vector3(0, 0, 0), Quaternion.Euler(-90, 45, 0), transform);
+                    tile.AddComponent<Spike>();
+                }
+                else
+                {
+                    // 生成普通地砖
+                    tile = Instantiate(Resources.Load<GameObject>("Tile/Tile"), new Vector3(0, 0, 0), Quaternion.Euler(-90, 45, 0), transform);
+                    // rgb数值/255f
+                    tile.GetComponent<MeshRenderer>().material.color = depthColor;
+                    tile.transform.Find("normal_a2").GetComponent<MeshRenderer>().material.color = depthColor;
+                }
+
                 // 每个方块偏移0.35
                 tile.transform.position = new Vector3(diagonal + x * diagonal, 0, z * diagonal + offSetZ);
-                // rgb数值/255f
-                tile.GetComponent<MeshRenderer>().material.color = depthColor;
-                tile.transform.Find("normal_a2").GetComponent<MeshRenderer>().material.color = depthColor;
 
                 OddTiles[x] = tile;
             }
@@ -139,18 +189,45 @@ public class Map : MonoBehaviour
                 if (x == 0 || x == 5)
                 {
                     // 墙
-                    tile = Instantiate(Resources.Load<GameObject>("Wall"), new Vector3(0, 0, 0), Quaternion.Euler(-90, 45, 0), transform);
+                    tile = Instantiate(Resources.Load<GameObject>("Tile/Wall"), new Vector3(0, 0, 0), Quaternion.Euler(-90, 45, 0), transform);
                     tile.transform.position = new Vector3(diagonal / 2 + x * diagonal, 0, diagonal / 2 + z * diagonal + offSetZ);
                     tile.GetComponent<MeshRenderer>().material.color = color;
                 }
                 else
                 {
-                    // 砖块
-                    tile = Instantiate(Resources.Load<GameObject>("Tile"), new Vector3(0, 0, 0), Quaternion.Euler(-90, 45, 0), transform);
-                    // 先偏移0.175f
+                    int pr = Random.Range(1, 101);
+                    if (pr >= 1 && pr <= prNull)
+                    {
+                        // 生成空洞
+                        tile = new GameObject();
+                        tile.transform.SetParent(transform);
+                        tile.transform.rotation = Quaternion.Euler(-90, 45, 0);
+                    }
+                    else if (pr > prNull && pr <= prNull + prGroundSpike)
+                    {
+                        // 生成地面陷阱
+                        tile = Instantiate(Resources.Load<GameObject>("Spikes/GroundSpikes"), new Vector3(0, 0, 0), Quaternion.Euler(-90, 45, 0),
+                            transform);
+                        tile.AddComponent<Spike>();
+                    }
+                    else if (pr > prGroundSpike && pr <= prNull + prGroundSpike + prSkySpike)
+                    {
+                        // 生成天空陷阱
+                        tile = Instantiate(Resources.Load<GameObject>("Spikes/SkySpikes"), new Vector3(0, 0, 0), Quaternion.Euler(-90, 45, 0),
+                            transform);
+                        tile.AddComponent<Spike>();
+                    }
+                    else
+                    {
+                        // 生成普通地砖
+                        tile = Instantiate(Resources.Load<GameObject>("Tile/Tile"), new Vector3(0, 0, 0), Quaternion.Euler(-90, 45, 0), transform);
+                        // rgb数值/255f
+                        tile.GetComponent<MeshRenderer>().material.color = color;
+                        tile.transform.Find("normal_a2").GetComponent<MeshRenderer>().material.color = color;
+                    }
+
+                    // 先偏移0.175f,每个方块偏移0.35
                     tile.transform.position = new Vector3(diagonal / 2 + x * diagonal, 0, diagonal / 2 + z * diagonal + offSetZ);
-                    tile.GetComponent<MeshRenderer>().material.color = color;
-                    tile.transform.Find("normal_a2").GetComponent<MeshRenderer>().material.color = color;
                 }
 
                 evenTiles[x] = tile;

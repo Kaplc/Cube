@@ -52,16 +52,18 @@ public class Player : MonoBehaviour
         {
             Dead();
         }
+
         Move();
     }
 
     private void Dead()
     {
         // print($"map{Map.Zindex} z{pos.z}");
-        if (Map.Zindex >= pos.z +1)
+        if (Map.Zindex >= pos.z + 1)
         {
             isOver = true;
-            gameObject.AddComponent<Rigidbody>().AddTorque(new Vector3(Random.Range(1f, 30f), Random.Range(1f, 30f), Random.Range(1f, 30f)) * 20);;
+            gameObject.AddComponent<Rigidbody>().AddTorque(new Vector3(Random.Range(1f, 30f), Random.Range(1f, 30f), Random.Range(1f, 30f)) * 20);
+            ;
             Destroy(gameObject, 3);
             CameraFollow.StartOrStopFollow();
         }
@@ -73,6 +75,7 @@ public class Player : MonoBehaviour
         {
             return;
         }
+
         if (Input.GetKey(KeyCode.Space))
         {
             ResetPos();
@@ -136,17 +139,27 @@ public class Player : MonoBehaviour
 
     private void CreateMark()
     {
+        GameObject tile = Map.TilePos[oldPos.z][oldPos.x];
+        GameObject ground;
         // 获取底部砖块
-        GameObject tile = Map.TilePos[oldPos.z][oldPos.x].transform.Find("normal_a2").gameObject;
-
-        if (pos.z % 2 == 0)
+        if (tile.CompareTag("GroundSpike"))
         {
-            // 偶数行深色
-            tile.GetComponent<MeshRenderer>().material.color = depthColor;
+          ground = tile.transform.Find("moving_spikes_a2").gameObject;
+        }
+        else if (tile.CompareTag("SkySpike"))
+        {
+            ground = tile.transform.Find("smashing_spikes_a2").gameObject;
+        }
+        else if (tile.CompareTag("Tile"))
+        { 
+            ground = tile.transform.Find("normal_a2").gameObject;
         }
         else
         {
-            tile.GetComponent<MeshRenderer>().material.color = color;
+            return;
         }
+        // 偶数行深色
+        ground.GetComponent<MeshRenderer>().material.color = pos.z % 2 == 0 ? depthColor : color;
+        
     }
 }
