@@ -1,27 +1,36 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
+    public static CameraFollow Instance => instance;
+    private static CameraFollow instance;
+    
     public Player player;
-    public static bool follow;
+    public bool follow;
 
     public float distance;
 
-    public static void StartOrStopFollow()
+    public void StopFollow()
     {
-        follow = !follow;
+        follow = false;
     }
-    
+
+    private void Awake()
+    {
+        instance = this;
+    }
+
     // Update is called once per frame
     void Update()
     {
 
         if (Input.GetKeyDown(KeyCode.O))
         {
-            StartOrStopFollow();
+            follow = true;
         }
         
         if (follow)

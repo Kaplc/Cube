@@ -22,6 +22,8 @@ public class Player : MonoBehaviour
     private float cd = 0; // 按键移动cd
     public static bool isOver = false;
 
+    private Rigidbody playerRigidbody;
+
     private void Awake()
     {
         instance = this;
@@ -34,39 +36,42 @@ public class Player : MonoBehaviour
         mapPos = Map.TilePos[pos.z][pos.x].transform.position;
         transform.position = new Vector3(mapPos.x, 0.254f / 2, mapPos.z);
         transform.rotation = Quaternion.Euler(new Vector3(0, -45, 0));
+
+        playerRigidbody = gameObject.AddComponent<Rigidbody>();
+        playerRigidbody.useGravity = false;
     }
 
-    private void ResetPos()
-    {
-        pos.x = 3;
-        pos.z = 2;
-        mapPos = Map.TilePos[3][2].transform.position;
-        transform.position = new Vector3(mapPos.x, 0.254f / 2, mapPos.z);
-        transform.rotation = Quaternion.Euler(new Vector3(0, -45, 0));
-    }
 
     // Update is called once per frame
     void Update()
     {
         if (!isOver)
         {
-            Dead();
-        }
+            // 玩家掉落
+            if (Map.Zindex >= pos.z + 1)
+            {
+                gameObject.GetComponent<Rigidbody>().AddTorque(new Vector3(Random.Range(1f, 30f), Random.Range(1f, 30f), Random.Range(1f, 30f)) * 20);
+                playerRigidbody.useGravity = true;
+                Destroy(gameObject, 3);
+                Dead();
+            }
 
-        Move();
+            Move();
+        }
     }
 
-    private void Dead()
+    private void OnTriggerEnter(Collider other)
     {
-        // print($"map{Map.Zindex} z{pos.z}");
-        if (Map.Zindex >= pos.z + 1)
-        {
-            isOver = true;
-            gameObject.AddComponent<Rigidbody>().AddTorque(new Vector3(Random.Range(1f, 30f), Random.Range(1f, 30f), Random.Range(1f, 30f)) * 20);
-            ;
-            Destroy(gameObject, 3);
-            CameraFollow.StartOrStopFollow();
-        }
+        Dead();
+    }
+
+    #region 非系统代码
+
+    public void Dead()
+    {
+        isOver = true;
+        // 摄像机停止跟随
+        CameraFollow.Instance.StopFollow();
     }
 
     private void Move()
@@ -74,11 +79,6 @@ public class Player : MonoBehaviour
         if (isOver)
         {
             return;
-        }
-
-        if (Input.GetKey(KeyCode.Space))
-        {
-            ResetPos();
         }
 
         if (Input.GetKey(KeyCode.A))
@@ -123,9 +123,18 @@ public class Player : MonoBehaviour
 
         mapPos = Map.TilePos[pos.z][pos.x].transform.position;
         transform.position = Vector3.Lerp(transform.position, new Vector3(mapPos.x, transform.position.y, mapPos.z), Time.deltaTime * speed);
+        if (Map.TilePos[pos.z][pos.x].CompareTag("Untagged"))
+        {
+            playerRigidbody.useGravity = true;
+            Dead();
+        }
         // transform.position = new Vector3(mapPos.x, transform.position.y, mapPos.z);
     }
-
+    
+    /// <summary>
+    /// 地图边界
+    /// </summary>
+    /// <returns></returns>
     private bool MapLimit()
     {
         // 奇数行的0和 5不能
@@ -137,6 +146,10 @@ public class Player : MonoBehaviour
         return true;
     }
 
+
+    /// <summary>
+    /// 生成轨迹
+    /// </summary>
     private void CreateMark()
     {
         GameObject tile = Map.TilePos[oldPos.z][oldPos.x];
@@ -144,22 +157,24 @@ public class Player : MonoBehaviour
         // 获取底部砖块
         if (tile.CompareTag("GroundSpike"))
         {
-          ground = tile.transform.Find("moving_spikes_a2").gameObject;
+            ground = tile.transform.Find("moving_spikes_a2").gameObject;
         }
         else if (tile.CompareTag("SkySpike"))
         {
             ground = tile.transform.Find("smashing_spikes_a2").gameObject;
         }
         else if (tile.CompareTag("Tile"))
-        { 
+        {
             ground = tile.transform.Find("normal_a2").gameObject;
         }
         else
         {
             return;
         }
+
         // 偶数行深色
         ground.GetComponent<MeshRenderer>().material.color = pos.z % 2 == 0 ? depthColor : color;
-        
     }
+
+    #endregion
 }
