@@ -104,6 +104,15 @@ public class Map : MonoBehaviour
             }
 
             Zindex++;
+            
+            // 按照砖块掉落进程提高陷阱概率
+            if (Zindex == 200 || Zindex == 350 || Zindex == 450 || Zindex == 500)
+            {
+                prNull ++;
+                prGroundSpike ++;
+                prSkySpike ++;
+            }
+            
             yield return new WaitForSeconds(0.15f);
         }
     }

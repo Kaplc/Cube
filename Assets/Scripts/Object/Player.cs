@@ -58,6 +58,11 @@ public class Player : MonoBehaviour
 
             Move();
         }
+
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            Application.Quit(0);
+        }
     }
 
     private void OnTriggerEnter(Collider other)
