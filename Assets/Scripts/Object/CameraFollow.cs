@@ -27,12 +27,6 @@ public class CameraFollow : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        if (Input.GetKeyDown(KeyCode.O))
-        {
-            follow = true;
-        }
-        
         if (follow)
         {
             transform.position = Vector3.Lerp(transform.position,

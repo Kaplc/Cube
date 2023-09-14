@@ -15,8 +15,8 @@ MonoBehaviour:
   material: {fileID: 2100000, guid: 93c5ca7c70c4cf3439850a1dd18b7989, type: 2}
   mSprites:
   - name: btn_char_buy
-    x: 0
-    y: 530
+    x: 1025
+    y: 1042
     width: 256
     height: 256
     borderLeft: 0
@@ -28,8 +28,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: btn_char_play
-    x: 1781
-    y: 1792
+    x: 511
+    y: 254
     width: 256
     height: 256
     borderLeft: 0
@@ -41,8 +41,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: btn_characters
-    x: 73
-    y: 401
+    x: 1155
+    y: 656
     width: 118
     height: 128
     borderLeft: 0
@@ -55,7 +55,7 @@ MonoBehaviour:
     paddingBottom: 0
   - name: btn_empty
     x: 1025
-    y: 1079
+    y: 1536
     width: 512
     height: 512
     borderLeft: 0
@@ -67,8 +67,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: btn_help
-    x: 0
-    y: 435
+    x: 1389
+    y: 1204
     width: 72
     height: 94
     borderLeft: 0
@@ -80,8 +80,8 @@ MonoBehaviour:
     paddingTop: 17
     paddingBottom: 17
   - name: 'btn_leaderboard '
-    x: 257
-    y: 464
+    x: 1369
+    y: 824
     width: 111
     height: 88
     borderLeft: 0
@@ -93,8 +93,8 @@ MonoBehaviour:
     paddingTop: 20
     paddingBottom: 20
   - name: btn_like
-    x: 360
-    y: 682
+    x: 1282
+    y: 1194
     width: 106
     height: 104
     borderLeft: 0
@@ -106,8 +106,8 @@ MonoBehaviour:
     paddingTop: 12
     paddingBottom: 12
   - name: btn_mute_off
-    x: 257
-    y: 688
+    x: 1274
+    y: 715
     width: 102
     height: 98
     borderLeft: 0
@@ -119,8 +119,8 @@ MonoBehaviour:
     paddingTop: 15
     paddingBottom: 15
   - name: btn_mute_on
-    x: 667
-    y: 668
+    x: 1256
+    y: 814
     width: 112
     height: 98
     borderLeft: 0
@@ -132,8 +132,8 @@ MonoBehaviour:
     paddingTop: 15
     paddingBottom: 15
   - name: btn_noads
-    x: 1536
-    y: 1663
+    x: 1256
+    y: 913
     width: 128
     height: 128
     borderLeft: 0
@@ -145,8 +145,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: btn_pause
-    x: 780
-    y: 638
+    x: 1238
+    y: 527
     width: 128
     height: 128
     borderLeft: 0
@@ -158,8 +158,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: btn_play
-    x: 1025
-    y: 566
+    x: 513
+    y: 511
     width: 512
     height: 512
     borderLeft: 0
@@ -171,8 +171,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: btn_rate
-    x: 467
-    y: 655
+    x: 1282
+    y: 1082
     width: 116
     height: 111
     borderLeft: 0
@@ -184,8 +184,8 @@ MonoBehaviour:
     paddingTop: 9
     paddingBottom: 8
   - name: btn_restore
-    x: 257
-    y: 553
+    x: 1109
+    y: 527
     width: 128
     height: 128
     borderLeft: 0
@@ -197,8 +197,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: btn_share
-    x: 584
-    y: 646
+    x: 1026
+    y: 535
     width: 82
     height: 120
     borderLeft: 0
@@ -210,8 +210,8 @@ MonoBehaviour:
     paddingTop: 4
     paddingBottom: 4
   - name: gem
-    x: 386
-    y: 526
+    x: 1026
+    y: 656
     width: 128
     height: 128
     borderLeft: 0
@@ -223,8 +223,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: gift
-    x: 749
-    y: 767
+    x: 1026
+    y: 785
     width: 229
     height: 256
     borderLeft: 0
@@ -236,8 +236,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: logo
-    x: 0
-    y: 787
+    x: 1025
+    y: 1299
     width: 512
     height: 236
     borderLeft: 0
@@ -249,8 +249,8 @@ MonoBehaviour:
     paddingTop: 10
     paddingBottom: 10
   - name: new_char
-    x: 513
-    y: 767
+    x: 1013
+    y: 254
     width: 235
     height: 256
     borderLeft: 0
@@ -262,8 +262,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: pause_big
-    x: 1536
-    y: 1792
+    x: 768
+    y: 254
     width: 244
     height: 256
     borderLeft: 0
@@ -272,6 +272,19 @@ MonoBehaviour:
     borderBottom: 0
     paddingLeft: 6
     paddingRight: 6
+    paddingTop: 0
+    paddingBottom: 0
+  - name: quit
+    x: 0
+    y: 511
+    width: 512
+    height: 512
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 0
+    paddingRight: 0
     paddingTop: 0
     paddingBottom: 0
   - name: tutorial
@@ -288,8 +301,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: tutorial_cube
-    x: 1025
-    y: 1592
+    x: 0
+    y: 54
     width: 510
     height: 456
     borderLeft: 0

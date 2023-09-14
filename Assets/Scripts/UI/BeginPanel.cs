@@ -2,17 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BeginPanel : MonoBehaviour
+public class BeginPanel : BasePanel<BeginPanel>
 {
-    // Start is called before the first frame update
-    void Start()
+    public UIButton startBtn;
+    
+    
+    protected override void Init()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        startBtn.onClick.Add(new EventDelegate(() =>
+        {
+            GamePanel.Instance.Show();
+            Map.Instance.StartTileFallDown(); // 方块开始掉落
+            CameraFollow.Instance.follow = true; // 摄像机开始跟随
+            Hide();
+        }));
     }
 }

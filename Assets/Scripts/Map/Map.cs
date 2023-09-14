@@ -5,15 +5,6 @@ using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-
-public enum E_TileType
-{
-    Normal,
-    Null,
-    GroundSpike,
-    SkySpike
-}
-
 public struct Pos
 {
     public int x;
@@ -28,6 +19,10 @@ public struct Pos
 
 public class Map : MonoBehaviour
 {
+    private static Map instance;
+    public static Map Instance => instance;
+
+
     // 对角线长度
     private float diagonal = 0.35921f;
 
@@ -37,8 +32,7 @@ public class Map : MonoBehaviour
     public Color wallColor = new Color(82 / 255f, 59 / 255f, 102 / 255f);
 
     // 砖块坐标数据集合
-    public static List<GameObject[]> TilePos => tilePos;
-    private static List<GameObject[]> tilePos = new List<GameObject[]>();
+    public List<GameObject[]> tilePos = new List<GameObject[]>();
 
     // 当前掉落行号
     public static int Zindex = 0;
@@ -46,11 +40,17 @@ public class Map : MonoBehaviour
 
     // 砖块类型概率
     private int prNull = 0;
-    private int prGroundSpike = 0;                
+    private int prGroundSpike = 0;
+
     private int prSkySpike = 0;
+
+    // 奖励生成概率
+    private int prGem = 1;
 
     void Awake()
     {
+        instance = this;
+
         CreatMapItem(0);
         prNull += 2;
         prGroundSpike += 1;
@@ -60,10 +60,6 @@ public class Map : MonoBehaviour
     private void Update()
     {
         NewMap();
-        if (Input.GetKeyUp(KeyCode.O))
-        {
-            StartTileFallDown();
-        }
 
         if (Player.isOver)
         {
@@ -71,7 +67,7 @@ public class Map : MonoBehaviour
         }
     }
 
-    private void StartTileFallDown()
+    public void StartTileFallDown()
     {
         startTileFallDown = StartCoroutine(TileFallDown());
     }
@@ -95,24 +91,25 @@ public class Map : MonoBehaviour
                 Rigidbody tileRigidbody = tilePos[Zindex][x].AddComponent<Rigidbody>();
                 tileRigidbody.AddTorque(new Vector3(Random.Range(1f, 30f), Random.Range(1f, 30f), Random.Range(1f, 30f)) * 20);
                 // 延时销毁
-                if (tileRigidbody.gameObject.CompareTag("GroundSpike") ||tileRigidbody.gameObject.CompareTag("SkySpike") )
+                if (tileRigidbody.gameObject.CompareTag("GroundSpike") || tileRigidbody.gameObject.CompareTag("SkySpike"))
                 {
                     tileRigidbody.GetComponent<Spike>().ObjDestroy();
                 }
+
                 Destroy(tileRigidbody.gameObject, 2);
                 tilePos[Zindex][x] = null;
             }
 
             Zindex++;
-            
+
             // 按照砖块掉落进程提高陷阱概率
             if (Zindex == 200 || Zindex == 350 || Zindex == 450 || Zindex == 500)
             {
-                prNull ++;
-                prGroundSpike ++;
-                prSkySpike ++;
+                prNull++;
+                prGroundSpike++;
+                prSkySpike++;
             }
-            
+
             yield return new WaitForSeconds(0.15f);
         }
     }
@@ -149,10 +146,9 @@ public class Map : MonoBehaviour
             // 偶数行
             for (int x = 0; x < 5; x++)
             {
-                
                 int pr = Random.Range(1, 101);
                 GameObject tile;
-           
+
                 if (pr >= 1 && pr <= prNull)
                 {
                     // 生成空洞
@@ -163,7 +159,8 @@ public class Map : MonoBehaviour
                 else if (pr > prNull && pr <= prNull + prGroundSpike)
                 {
                     // 生成地面陷阱
-                    tile = Instantiate(Resources.Load<GameObject>("Spikes/GroundSpikes"), new Vector3(0, 0, 0), Quaternion.Euler(-90, 45, 0), transform);
+                    tile = Instantiate(Resources.Load<GameObject>("Spikes/GroundSpikes"), new Vector3(0, 0, 0), Quaternion.Euler(-90, 45, 0),
+                        transform);
                     // 添加陷阱脚本
                     tile.AddComponent<Spike>();
                 }
@@ -180,6 +177,14 @@ public class Map : MonoBehaviour
                     // rgb数值/255f
                     tile.GetComponent<MeshRenderer>().material.color = depthColor;
                     tile.transform.Find("normal_a2").GetComponent<MeshRenderer>().material.color = depthColor;
+
+                    // 生成奖励
+                    int nowPrGem = Random.Range(1, 101);
+                    if (nowPrGem <= prGem)
+                    {
+                        Instantiate(Resources.Load<GameObject>("gem/gem"), tile.transform.position + new Vector3(0, 0.1f, 0),
+                            tile.transform.rotation, tile.transform);
+                    }
                 }
 
                 // 每个方块偏移0.35
@@ -233,6 +238,13 @@ public class Map : MonoBehaviour
                         // rgb数值/255f
                         tile.GetComponent<MeshRenderer>().material.color = color;
                         tile.transform.Find("normal_a2").GetComponent<MeshRenderer>().material.color = color;
+
+                        int nowPrGem = Random.Range(1, 101);
+                        if (nowPrGem <= prGem)
+                        {
+                            Instantiate(Resources.Load<GameObject>("gem/gem"), tile.transform.position + new Vector3(0, 0.1f, 0),
+                                tile.transform.rotation, tile.transform);
+                        }
                     }
 
                     // 先偏移0.175f,每个方块偏移0.35

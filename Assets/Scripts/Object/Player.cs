@@ -24,6 +24,9 @@ public class Player : MonoBehaviour
 
     private Rigidbody playerRigidbody;
 
+    public int gemCount;
+    public int score;
+
     private void Awake()
     {
         instance = this;
@@ -33,7 +36,7 @@ public class Player : MonoBehaviour
     void Start()
     {
         // 地图坐标位置赋给player
-        mapPos = Map.TilePos[pos.z][pos.x].transform.position;
+        mapPos = Map.Instance.tilePos[pos.z][pos.x].transform.position;
         transform.position = new Vector3(mapPos.x, 0.254f / 2, mapPos.z);
         transform.rotation = Quaternion.Euler(new Vector3(0, -45, 0));
 
@@ -67,16 +70,40 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        // 碰到陷阱死亡
+        if (other.CompareTag("Gem"))
+        {
+            // 碰到奖励加分
+            AddGem();
+            Destroy(other.gameObject);
+            return;
+        }
+
         Dead();
+
     }
 
     #region 非系统代码
 
+    public void AddGem()
+    {
+        gemCount++;
+        GamePanel.Instance.UpdateGemCount(gemCount);
+    }
+
+    public void AddScore()
+    {
+        score++;
+        GamePanel.Instance.UpdateScore(score);
+    }
+    
     public void Dead()
     {
         isOver = true;
         // 摄像机停止跟随
         CameraFollow.Instance.StopFollow();
+        // 结束界面渐变
+        GamePanel.Instance.StartEndFade();
     }
 
     private void Move()
@@ -105,6 +132,9 @@ public class Player : MonoBehaviour
             if (!MapLimit()) pos = oldPos;
             // 每次移动创建轨迹
             CreateMark();
+            
+            // 增加分数
+            AddScore();
         }
 
         if (Input.GetKey(KeyCode.D))
@@ -124,11 +154,13 @@ public class Player : MonoBehaviour
 
             if (!MapLimit()) pos = oldPos;
             CreateMark();
+            AddScore();
         }
 
-        mapPos = Map.TilePos[pos.z][pos.x].transform.position;
+        mapPos = Map.Instance.tilePos[pos.z][pos.x].transform.position;
         transform.position = Vector3.Lerp(transform.position, new Vector3(mapPos.x, transform.position.y, mapPos.z), Time.deltaTime * speed);
-        if (Map.TilePos[pos.z][pos.x].CompareTag("Untagged"))
+        // 空洞掉落
+        if (Map.Instance.tilePos[pos.z][pos.x].CompareTag("Untagged"))
         {
             playerRigidbody.useGravity = true;
             Dead();
@@ -157,7 +189,7 @@ public class Player : MonoBehaviour
     /// </summary>
     private void CreateMark()
     {
-        GameObject tile = Map.TilePos[oldPos.z][oldPos.x];
+        GameObject tile = Map.Instance.tilePos[oldPos.z][oldPos.x];
         GameObject ground;
         // 获取底部砖块
         if (tile.CompareTag("GroundSpike"))
