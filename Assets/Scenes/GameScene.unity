@@ -1518,7 +1518,7 @@ MonoBehaviour:
   keepCrispWhenShrunk: 1
   mTrueTypeFont: {fileID: 12800000, guid: 0e49ff9899c406347a5e7e30caf0ea0f, type: 3}
   mFont: {fileID: 0}
-  mText: 88
+  mText: 0
   mFontSize: 56
   mFontStyle: 0
   mAlignment: 3
@@ -2034,7 +2034,7 @@ MonoBehaviour:
   keepCrispWhenShrunk: 1
   mTrueTypeFont: {fileID: 12800000, guid: 0e49ff9899c406347a5e7e30caf0ea0f, type: 3}
   mFont: {fileID: 0}
-  mText: 68
+  mText: 0
   mFontSize: 36
   mFontStyle: 0
   mAlignment: 3
@@ -2182,6 +2182,7 @@ MonoBehaviour:
   color: {r: 0.40392157, g: 0.33333334, b: 0.49803922, a: 1}
   depthColor: {r: 0.3529412, g: 0.3019608, b: 0.4509804, a: 1}
   wallColor: {r: 0.32156864, g: 0.23137255, b: 0.4, a: 1}
+  Zindex: 0
 --- !u!4 &934861768
 Transform:
   m_ObjectHideFlags: 0
@@ -2368,7 +2369,9 @@ MonoBehaviour:
   keepCrispWhenShrunk: 1
   mTrueTypeFont: {fileID: 12800000, guid: 0e49ff9899c406347a5e7e30caf0ea0f, type: 3}
   mFont: {fileID: 0}
-  mText: 26
+  mText: '0
+
+'
   mFontSize: 90
   mFontStyle: 0
   mAlignment: 0
@@ -2698,9 +2701,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1379288437}
-  - component: {fileID: 1379288439}
   - component: {fileID: 1379288440}
   - component: {fileID: 1379288438}
+  - component: {fileID: 1379288441}
   m_Layer: 5
   m_Name: BeginPanel
   m_TagString: Untagged
@@ -2787,19 +2790,6 @@ MonoBehaviour:
   mSortingLayerName: 
   mClipOffset: {x: 0, y: 0}
   useSortingOrder: 0
---- !u!114 &1379288439
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1379288436}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2eae5c8018038fd40b5339a7c97b1fab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  startBtn: {fileID: 1984664571}
 --- !u!54 &1379288440
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2816,6 +2806,21 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1379288441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1379288436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2eae5c8018038fd40b5339a7c97b1fab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startBtn: {fileID: 1984664571}
+  scoreLb: {fileID: 1463540287}
+  gemLb: {fileID: 588060607}
 --- !u!1 &1463540285
 GameObject:
   m_ObjectHideFlags: 0
@@ -3742,6 +3747,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 50
+  isOver: 0
   gemCount: 0
   score: 0
 --- !u!65 &2072732491

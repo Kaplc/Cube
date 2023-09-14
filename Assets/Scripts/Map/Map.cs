@@ -35,7 +35,7 @@ public class Map : MonoBehaviour
     public List<GameObject[]> tilePos = new List<GameObject[]>();
 
     // 当前掉落行号
-    public static int Zindex = 0;
+    public int Zindex = 0;
     private Coroutine startTileFallDown;
 
     // 砖块类型概率
@@ -60,11 +60,6 @@ public class Map : MonoBehaviour
     private void Update()
     {
         NewMap();
-
-        if (Player.isOver)
-        {
-            StopTileFallDown();
-        }
     }
 
     public void StartTileFallDown()
@@ -72,7 +67,7 @@ public class Map : MonoBehaviour
         startTileFallDown = StartCoroutine(TileFallDown());
     }
 
-    private void StopTileFallDown()
+    public void StopTileFallDown()
     {
         StopCoroutine(startTileFallDown);
     }

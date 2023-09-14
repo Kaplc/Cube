@@ -52,6 +52,9 @@ public class GamePanel : BasePanel<GamePanel>
         {
             if (backGround.color.a >= 0.99f)
             {
+                // 保存数据
+                DataManager.Instance.newDataInfo.score = Player.Instance.score;
+                DataManager.Instance.newDataInfo.gemCount = Player.Instance.gemCount;
                 // 渐变结束进入结束场景
                 SceneManager.LoadScene("EndScene");
                 break;

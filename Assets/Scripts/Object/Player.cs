@@ -20,7 +20,7 @@ public class Player : MonoBehaviour
     private Color color = new Color(228 / 255f, 93 / 255f, 137 / 255f);
 
     private float cd = 0; // 按键移动cd
-    public static bool isOver = false;
+    public bool isOver = false;
 
     private Rigidbody playerRigidbody;
 
@@ -51,7 +51,7 @@ public class Player : MonoBehaviour
         if (!isOver)
         {
             // 玩家掉落
-            if (Map.Zindex >= pos.z + 1)
+            if (Map.Instance.Zindex >= pos.z + 1)
             {
                 gameObject.GetComponent<Rigidbody>().AddTorque(new Vector3(Random.Range(1f, 30f), Random.Range(1f, 30f), Random.Range(1f, 30f)) * 20);
                 playerRigidbody.useGravity = true;
@@ -102,6 +102,8 @@ public class Player : MonoBehaviour
         isOver = true;
         // 摄像机停止跟随
         CameraFollow.Instance.StopFollow();
+        // 停止下落
+        Map.Instance.StopTileFallDown();
         // 结束界面渐变
         GamePanel.Instance.StartEndFade();
     }
