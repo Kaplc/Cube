@@ -82,16 +82,19 @@ public class Map : MonoBehaviour
         {
             for (int x = 0; x < tilePos[Zindex].Length; x++)
             {
-                // 添加刚体受重力下落, 并随机旋转
-                Rigidbody tileRigidbody = tilePos[Zindex][x].AddComponent<Rigidbody>();
-                tileRigidbody.AddTorque(new Vector3(Random.Range(1f, 30f), Random.Range(1f, 30f), Random.Range(1f, 30f)) * 20);
-                // 延时销毁
-                if (tileRigidbody.gameObject.CompareTag("GroundSpike") || tileRigidbody.gameObject.CompareTag("SkySpike"))
+                GameObject tile = tilePos[Zindex][x];
+                // 当前砖块为陷阱时
+                if (tile.CompareTag("GroundSpike") || tile.CompareTag("SkySpike"))
                 {
-                    tileRigidbody.GetComponent<Spike>().ObjDestroy();
+                    tile.GetComponent<Spike>().FallDown();
                 }
-
-                Destroy(tileRigidbody.gameObject, 2);
+                else
+                {
+                    // 普通砖块添加刚体受重力下落, 并随机旋转
+                    tile.GetComponent<Tile>()?.FallDown();
+                }
+                
+                // 列表内该位置置空
                 tilePos[Zindex][x] = null;
             }
 
@@ -153,32 +156,34 @@ public class Map : MonoBehaviour
                 }
                 else if (pr > prNull && pr <= prNull + prGroundSpike)
                 {
-                    // 生成地面陷阱
-                    tile = Instantiate(Resources.Load<GameObject>("Spikes/GroundSpikes"), new Vector3(0, 0, 0), Quaternion.Euler(-90, 45, 0),
-                        transform);
-                    // 添加陷阱脚本
-                    tile.AddComponent<Spike>();
+                    // 创建地面陷阱
+                    tile = CreateGroundSpikes();
                 }
                 else if (pr > prGroundSpike && pr <= prNull + prGroundSpike + prSkySpike)
                 {
-                    // 生成天空陷阱
-                    tile = Instantiate(Resources.Load<GameObject>("Spikes/SkySpikes"), new Vector3(0, 0, 0), Quaternion.Euler(-90, 45, 0), transform);
-                    tile.AddComponent<Spike>();
+                    // 创建空中陷阱
+                    tile = CreateSkySpikes();
                 }
                 else
                 {
-                    // 生成普通地砖
-                    tile = Instantiate(Resources.Load<GameObject>("Tile/Tile"), new Vector3(0, 0, 0), Quaternion.Euler(-90, 45, 0), transform);
-                    // rgb数值/255f
-                    tile.GetComponent<MeshRenderer>().material.color = depthColor;
-                    tile.transform.Find("normal_a2").GetComponent<MeshRenderer>().material.color = depthColor;
-
-                    // 生成奖励
+                    // 创建普通方块
+                    tile = CreateNormalTile(depthColor);
+                    // 随机概率在普通方块上生成奖励
                     int nowPrGem = Random.Range(1, 101);
                     if (nowPrGem <= prGem)
                     {
-                        Instantiate(Resources.Load<GameObject>("gem/gem"), tile.transform.position + new Vector3(0, 0.1f, 0),
-                            tile.transform.rotation, tile.transform);
+                        GameObject gem = PoolManager.Instance.GetObject("gem/gem");
+                        if (gem)
+                        {
+                            gem.transform.SetParent(tile.transform);
+                            gem.transform.position = tile.transform.position + new Vector3(0, 0.1f, 0);
+                            gem.transform.rotation = tile.transform.rotation;
+                        }
+                        else
+                        {
+                            gem = Instantiate(Resources.Load<GameObject>("gem/gem"), tile.transform.position + new Vector3(0, 0.1f, 0),
+                                tile.transform.rotation, tile.transform);
+                        }
                     }
                 }
 
@@ -198,9 +203,12 @@ public class Map : MonoBehaviour
                 if (x == 0 || x == 5)
                 {
                     // 墙
-                    tile = Instantiate(Resources.Load<GameObject>("Tile/Wall"), new Vector3(0, 0, 0), Quaternion.Euler(-90, 45, 0), transform);
+                    tile = PoolManager.Instance.GetObject("Tile/Wall");
+                    tile.transform.SetParent(transform);
+                    tile.transform.localPosition = Vector3.zero;
+                    tile.transform.rotation = Quaternion.Euler(-90, 45, 0);
                     tile.transform.position = new Vector3(diagonal / 2 + x * diagonal, 0, diagonal / 2 + z * diagonal + offSetZ);
-                    tile.GetComponent<MeshRenderer>().material.color = color;
+                    tile.GetComponent<Tile>().ChangeColor(wallColor);
                 }
                 else
                 {
@@ -215,30 +223,33 @@ public class Map : MonoBehaviour
                     else if (pr > prNull && pr <= prNull + prGroundSpike)
                     {
                         // 生成地面陷阱
-                        tile = Instantiate(Resources.Load<GameObject>("Spikes/GroundSpikes"), new Vector3(0, 0, 0), Quaternion.Euler(-90, 45, 0),
-                            transform);
-                        tile.AddComponent<Spike>();
+                        tile = CreateGroundSpikes();
                     }
                     else if (pr > prGroundSpike && pr <= prNull + prGroundSpike + prSkySpike)
                     {
                         // 生成天空陷阱
-                        tile = Instantiate(Resources.Load<GameObject>("Spikes/SkySpikes"), new Vector3(0, 0, 0), Quaternion.Euler(-90, 45, 0),
-                            transform);
-                        tile.AddComponent<Spike>();
+                        tile = CreateSkySpikes();
                     }
                     else
                     {
                         // 生成普通地砖
-                        tile = Instantiate(Resources.Load<GameObject>("Tile/Tile"), new Vector3(0, 0, 0), Quaternion.Euler(-90, 45, 0), transform);
-                        // rgb数值/255f
-                        tile.GetComponent<MeshRenderer>().material.color = color;
-                        tile.transform.Find("normal_a2").GetComponent<MeshRenderer>().material.color = color;
-
+                        tile = CreateNormalTile(color);
+                        
                         int nowPrGem = Random.Range(1, 101);
                         if (nowPrGem <= prGem)
                         {
-                            Instantiate(Resources.Load<GameObject>("gem/gem"), tile.transform.position + new Vector3(0, 0.1f, 0),
-                                tile.transform.rotation, tile.transform);
+                            GameObject gem = PoolManager.Instance.GetObject("gem/gem");
+                            if (gem)
+                            {
+                                gem.transform.SetParent(tile.transform);
+                                gem.transform.position = tile.transform.position + new Vector3(0, 0.1f, 0);
+                                gem.transform.rotation = tile.transform.rotation;
+                            }
+                            else
+                            {
+                                Instantiate(Resources.Load<GameObject>("gem/gem"), tile.transform.position + new Vector3(0, 0.1f, 0),
+                                    tile.transform.rotation, tile.transform);
+                            }
                         }
                     }
 
@@ -253,6 +264,39 @@ public class Map : MonoBehaviour
         }
 
         // 重命名
-        ReName();
+        // ReName();
+    }
+
+    private GameObject CreateNormalTile(Color tileColor)
+    {
+        GameObject normalTile = PoolManager.Instance.GetObject("Tile/Tile");
+
+        normalTile.transform.SetParent(transform);
+        normalTile.transform.localPosition = Vector3.zero;
+        normalTile.transform.rotation = Quaternion.Euler(-90, 45, 0);
+        normalTile.GetComponent<Tile>().ChangeColor(tileColor);
+        return normalTile;
+    }
+
+    private GameObject CreateSkySpikes()
+    {
+        GameObject skySpikes = PoolManager.Instance.GetObject("Spikes/SkySpikes");
+
+        skySpikes.transform.SetParent(transform);
+        skySpikes.transform.localPosition = Vector3.zero;
+        skySpikes.transform.rotation = Quaternion.Euler(-90, 45, 0);
+
+        return skySpikes;
+    }
+
+    private GameObject CreateGroundSpikes()
+    {
+        GameObject groundSpikes = PoolManager.Instance.GetObject("Spikes/GroundSpikes");
+
+        groundSpikes.transform.SetParent(transform);
+        groundSpikes.transform.localPosition = Vector3.zero;
+        groundSpikes.transform.rotation = Quaternion.Euler(-90, 45, 0);
+        
+        return groundSpikes;
     }
 }

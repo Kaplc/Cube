@@ -75,7 +75,7 @@ public class Player : MonoBehaviour
         {
             // 碰到奖励加分
             AddGem();
-            Destroy(other.gameObject);
+            PoolManager.Instance.PushObject(other.gameObject);
             return;
         }
 

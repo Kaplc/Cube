@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -9,16 +10,37 @@ public class Spike : MonoBehaviour
 {
     private Transform childTransform;
     private Coroutine triggerCoroutine;
+    private Coroutine pushCoroutine;
+    public Rigidbody rg;
 
     // 陷阱动画偏移
     private float offSetZ;
-
     // 陷阱间隔时间
     private float cd;
+
+    private bool isStart;
+
+    private void OnEnable()
+    {
+        if (isStart)
+        {
+            StopCoroutine(pushCoroutine);
+            // 关闭重力
+            rg.useGravity = false;
+            // 速度置零
+            rg.velocity = Vector3.zero;
+            rg.angularVelocity = Vector3.zero; 
+            // 启动动画协程
+            triggerCoroutine = StartCoroutine(TriggerSpike());
+            // 随机陷阱时间间隔
+            cd = Random.Range(0.8f, 2.0f);
+        }
+    }
 
     // Start is called before the first frame update
     void Start()
     {
+        isStart = true;
         // 找到子物体
         if (gameObject.CompareTag("GroundSpike"))
         {
@@ -37,10 +59,14 @@ public class Spike : MonoBehaviour
         cd = Random.Range(0.8f, 2.0f);
     }
 
-    public void ObjDestroy()
+    public void FallDown()
     {
         StopCoroutine(triggerCoroutine);
-        Destroy(gameObject, 2);
+        // 启动重力
+        rg.useGravity = true;
+        // 加力随机旋转
+        rg.AddTorque(new Vector3(Random.Range(1f, 30f), Random.Range(1f, 30f), Random.Range(1f, 30f)) * 20);
+        pushCoroutine = StartCoroutine(Push());
     }
 
     private IEnumerator TriggerSpike()
@@ -49,9 +75,15 @@ public class Spike : MonoBehaviour
         {
             childTransform.localPosition = new Vector3(childTransform.localPosition.x, childTransform.localPosition.y, offSetZ);
             yield return new WaitForSeconds(cd);
-
+            
             childTransform.localPosition = new Vector3(childTransform.localPosition.x, childTransform.localPosition.y, 0);
             yield return new WaitForSeconds(cd);
         }
+    }
+
+    private IEnumerator Push()
+    {
+        yield return new WaitForSeconds(2f);
+        PoolManager.Instance.PushObject(gameObject);
     }
 }
