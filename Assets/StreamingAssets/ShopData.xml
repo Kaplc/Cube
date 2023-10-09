@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ShopData>
+    <cubeInfos>
+        <CubeInfo id="0" path="Player/cube_books"/>
+        <CubeInfo id="1" path="Player/cube_box"/>
+        <CubeInfo id="2" path="Player/cube_cheese"/>
+        <CubeInfo id="3" path="Player/cube_dice"/>
+        <CubeInfo id="4" path="Player/cube_hamburger"/>
+        <CubeInfo id="5" path="Player/cube_bread"/>
+        <CubeInfo id="6" path="Player/cube_fruit"/>
+    </cubeInfos>
+</ShopData>
