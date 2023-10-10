@@ -7,7 +7,7 @@ using Random = UnityEngine.Random;
 
 public struct Pos
 {
-    public int x;
+    public int x ;
     public int z;
 
     public Pos(int z, int x)
@@ -19,10 +19,6 @@ public struct Pos
 
 public class Map : MonoBehaviour
 {
-    private static Map instance;
-    public static Map Instance => instance;
-
-
     // 对角线长度
     private float diagonal = 0.35921f;
 
@@ -35,26 +31,23 @@ public class Map : MonoBehaviour
     public List<GameObject[]> tilePos = new List<GameObject[]>();
 
     // 当前掉落行号
-    public int Zindex = 0;
+    public int zIndex;
     private Coroutine startTileFallDown;
 
     // 砖块类型概率
-    private int prNull = 0;
-    private int prGroundSpike = 0;
-
-    private int prSkySpike = 0;
+    private int prNull;
+    private int prGroundSpike ;
+    private int prSkySpike;
 
     // 奖励生成概率
     private int prGem = 1;
 
     void Awake()
     {
-        instance = this;
-
         CreatMapItem(0);
-        prNull += 2;
-        prGroundSpike += 1;
-        prSkySpike += 1;
+        prNull = 2;
+        prGroundSpike = 1;
+        prSkySpike = 1;
     }
 
     private void Update()
@@ -80,9 +73,9 @@ public class Map : MonoBehaviour
     {
         while (true)
         {
-            for (int x = 0; x < tilePos[Zindex].Length; x++)
+            for (int x = 0; x < tilePos[zIndex].Length; x++)
             {
-                GameObject tile = tilePos[Zindex][x];
+                GameObject tile = tilePos[zIndex][x];
                 // 当前砖块为陷阱时
                 if (tile.CompareTag("GroundSpike") || tile.CompareTag("SkySpike"))
                 {
@@ -95,13 +88,13 @@ public class Map : MonoBehaviour
                 }
                 
                 // 列表内该位置置空
-                tilePos[Zindex][x] = null;
+                tilePos[zIndex][x] = null;
             }
 
-            Zindex++;
+            zIndex++;
 
             // 按照砖块掉落进程提高陷阱概率
-            if (Zindex == 200 || Zindex == 350 || Zindex == 450 || Zindex == 500)
+            if (zIndex == 200 || zIndex == 350 || zIndex == 450 || zIndex == 500)
             {
                 prNull++;
                 prGroundSpike++;
@@ -128,7 +121,7 @@ public class Map : MonoBehaviour
 
     private void NewMap()
     {
-        if ((tilePos.Count - 1) - Player.Instance.pos.z < 15)
+        if ((tilePos.Count - 1) - GameManager.Instance.player.pos.z < 15)
         {
             // 每行偏移2倍0.35921
             CreatMapItem(diagonal * tilePos.Count / 2);
@@ -298,5 +291,11 @@ public class Map : MonoBehaviour
         groundSpikes.transform.rotation = Quaternion.Euler(-90, 45, 0);
         
         return groundSpikes;
+    }
+
+    public void DestroyMap()
+    {
+        GameManager.Instance.map = null;
+        Destroy(gameObject);
     }
 }

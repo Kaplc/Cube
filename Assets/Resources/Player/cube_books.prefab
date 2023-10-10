@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 9144427823422785178}
   - component: {fileID: 9144427823424117550}
   - component: {fileID: 9144427823425246948}
+  - component: {fileID: 4299569290661364858}
   m_Layer: 0
   m_Name: cube_books
   m_TagString: Player
@@ -79,3 +80,16 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!65 &4299569290661364858
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9144427823423058836}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.28021762, y: 0.25406492, z: 0.26486117}
+  m_Center: {x: -0.0076782256, y: 0, z: 0}

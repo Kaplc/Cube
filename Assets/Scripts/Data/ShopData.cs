@@ -5,8 +5,9 @@ using UnityEngine;
 
 public class CubeInfo
 {
-    [XmlAttribute]public int id;
-    [XmlAttribute]public string path;
+    [XmlAttribute] public int id;
+    [XmlAttribute] public string path;
+    [XmlAttribute] public int unlockGemCount;
 }
 
 public class ShopData

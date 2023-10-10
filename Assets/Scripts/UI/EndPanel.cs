@@ -15,24 +15,26 @@ public class EndPanel : BasePanel<EndPanel>
         {
             SceneManager.LoadScene("GameScene");
         }));
-        
+        //
+        GameManager.Instance.isStart = false;
         // 更新面板
-        UpdateScore(DataManager.Instance.newDataInfo.score);
-        UpdateGemCount(DataManager.Instance.newDataInfo.gemCount);
+        UpdateScore(GameManager.Instance.score);
+        UpdateGemCount(GameManager.Instance.gemCount);
         
         //保存数据
-        DataManager.Instance.newDataInfo.score = DataManager.Instance.newDataInfo.score > DataManager.Instance.dataInfo.score
-            ? DataManager.Instance.newDataInfo.score
+        DataManager.Instance.dataInfo.score = GameManager.Instance.score> DataManager.Instance.dataInfo.score
+            ? GameManager.Instance.score
             : DataManager.Instance.dataInfo.score;
+        DataManager.Instance.dataInfo.gemCount += GameManager.Instance.gemCount;
         DataManager.Instance.SaveData();
     }
 
-    public void UpdateScore(int score)
+    private void UpdateScore(int score)
     {
         scoreLb.text = score.ToString();
     }
 
-    public void UpdateGemCount(int gemCount)
+    private void UpdateGemCount(int gemCount)
     {
         gemCountLb.text = gemCount.ToString();
     }

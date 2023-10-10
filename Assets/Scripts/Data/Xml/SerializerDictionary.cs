@@ -23,7 +23,7 @@ public class SerializerDictionary<TKey, TValue> : Dictionary<TKey, TValue>, IXml
             XmlSerializer valueSerializer = new XmlSerializer(typeof(TValue));
 
             TKey key = (TKey)keySerializer.Deserialize(reader); // 一行一行读取
-            TValue value = (TValue)valueSerializer.Deserialize(reader); ;
+            TValue value = (TValue)valueSerializer.Deserialize(reader); ;   
             
             this.Add(key, value);
         }

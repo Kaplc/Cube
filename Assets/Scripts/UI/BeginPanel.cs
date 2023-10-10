@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class BeginPanel : BasePanel<BeginPanel>
 {
     public UIButton btnStart;
@@ -14,37 +15,35 @@ public class BeginPanel : BasePanel<BeginPanel>
         btnStart.onClick.Add(new EventDelegate(() =>
         {
             GamePanel.Instance.Show();
-            Map.Instance.StartTileFallDown(); // 方块开始掉落
+            GameManager.Instance.map.StartTileFallDown(); // 方块开始掉落
             CameraFollow.Instance.follow = true; // 摄像机开始跟随
-            Player.Instance.isOver = false;
+            GameManager.Instance.isStart = true;
             Hide();
         }));
         
         btnShop.onClick.Add(new EventDelegate(() =>
         {
-            Map.Instance.gameObject.SetActive(false);
-            ShopMap.Instance.CreateMap();
             ShopPanel.Instance.Show();
-            Player.Instance.gameObject.SetActive(false);
+            GameManager.Instance.player.gameObject.SetActive(false);
+            GameManager.Instance.CreateShopMap();
             Hide();
         }));
         
-        Player.Instance.isOver = true;
         // 初始化数据
         UpdateData();
     }
 
-    public void UpdateScore(int score)
+    private void UpdateScore(int score)
     {
         lbScore.text = score.ToString();
     }
 
-    public void UpdateGemCount(int gemCount)
+    private void UpdateGemCount(int gemCount)
     {
         lbGem.text = gemCount.ToString();
     }
 
-    public void UpdateData()
+    private void UpdateData()
     {
         UpdateScore(DataManager.Instance.dataInfo.score);
         UpdateGemCount(DataManager.Instance.dataInfo.gemCount);

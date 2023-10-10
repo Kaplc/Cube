@@ -14,9 +14,9 @@ public class ResourcesFrameWork : BaseSingleton<ResourcesFrameWork>
     // 异步资源加载
     public void LoadAsync<T>(string fullName, UnityAction<T> callBack) where T : Object
     {
-        MonoManager.Instance.StartCoroutineFrameWork(LoadAsyncCoroutine<T>(fullName, callBack));
+        MonoManager.Instance.StartCoroutineFrameWork(LoadAsyncCoroutine(fullName, callBack));
     }
-    
+     
     // 异步加载协程
     private IEnumerator LoadAsyncCoroutine<T>(string fullName, UnityAction<T> callBack) where T : Object
     {

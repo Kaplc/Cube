@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ShopData>
     <cubeInfos>
-        <CubeInfo id="0" path="Player/cube_books"/>
-        <CubeInfo id="1" path="Player/cube_box"/>
-        <CubeInfo id="2" path="Player/cube_cheese"/>
-        <CubeInfo id="3" path="Player/cube_dice"/>
-        <CubeInfo id="4" path="Player/cube_hamburger"/>
-        <CubeInfo id="5" path="Player/cube_bread"/>
-        <CubeInfo id="6" path="Player/cube_fruit"/>
+        <CubeInfo id="0" path="Player/cube_books" unlockGemCount="0"/>
+        <CubeInfo id="1" path="Player/cube_box" unlockGemCount="50"/>
+        <CubeInfo id="2" path="Player/cube_cheese" unlockGemCount="100"/>
+        <CubeInfo id="3" path="Player/cube_dice" unlockGemCount="150"/>
+        <CubeInfo id="4" path="Player/cube_hamburger" unlockGemCount="200"/>
+        <CubeInfo id="5" path="Player/cube_bread" unlockGemCount="250"/>
+        <CubeInfo id="6" path="Player/cube_fruit" unlockGemCount="300"/>
     </cubeInfos>
 </ShopData>

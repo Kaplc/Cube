@@ -7,10 +7,7 @@ using Random = UnityEngine.Random;
 
 public class Player : MonoBehaviour
 {
-    private static Player instance;
-    public static Player Instance => instance;
-
-    public int speed;
+    public int speed=50;
 
     public Pos oldPos;
     public Pos pos = new Pos(6, 2);
@@ -19,24 +16,15 @@ public class Player : MonoBehaviour
     private Color depthColor = new Color(235 / 255f, 99 / 255f, 144 / 255f);
     private Color color = new Color(228 / 255f, 93 / 255f, 137 / 255f);
 
-    private float cd = 0; // 按键移动cd
-    public bool isOver = false;
+    private float cd; // 按键移动cd
 
     private Rigidbody playerRigidbody;
-
-    public int gemCount;
-    public int score;
-
-    private void Awake()
-    {
-        instance = this;
-    }
 
     // Start is called before the first frame update
     void Start()
     {
         // 地图坐标位置赋给player
-        mapPos = Map.Instance.tilePos[pos.z][pos.x].transform.position;
+        mapPos = GameManager.Instance.map.tilePos[pos.z][pos.x].transform.position;
         transform.position = new Vector3(mapPos.x, 0.254f / 2, mapPos.z);
         transform.rotation = Quaternion.Euler(new Vector3(0, -45, 0));
 
@@ -48,19 +36,19 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!isOver)
+        if (!GameManager.Instance.isStart) return;
+        
+        // 玩家掉落
+        if (GameManager.Instance.map.zIndex >= pos.z + 1)
         {
-            // 玩家掉落
-            if (Map.Instance.Zindex >= pos.z + 1)
-            {
-                gameObject.GetComponent<Rigidbody>().AddTorque(new Vector3(Random.Range(1f, 30f), Random.Range(1f, 30f), Random.Range(1f, 30f)) * 20);
-                playerRigidbody.useGravity = true;
-                Destroy(gameObject, 3);
-                Dead();
-            }
-
-            Move();
+            gameObject.GetComponent<Rigidbody>().AddTorque(new Vector3(Random.Range(1f, 30f), Random.Range(1f, 30f), Random.Range(1f, 30f)) * 20);
+            playerRigidbody.useGravity = true;
+            Destroy(gameObject, 3);
+            Dead();
         }
+
+        Move();
+        
 
         if (Input.GetKey(KeyCode.Escape))
         {
@@ -74,7 +62,7 @@ public class Player : MonoBehaviour
         if (other.CompareTag("Gem"))
         {
             // 碰到奖励加分
-            AddGem();
+            GameManager.Instance.AddGameGem();
             PoolManager.Instance.PushObject(other.gameObject);
             return;
         }
@@ -84,33 +72,22 @@ public class Player : MonoBehaviour
     }
 
     #region 非系统代码
-
-    public void AddGem()
-    {
-        gemCount++;
-        GamePanel.Instance.UpdateGemCount(gemCount);
-    }
-
-    public void AddScore()
-    {
-        score++;
-        GamePanel.Instance.UpdateScore(score);
-    }
+    
     
     public void Dead()
     {
-        isOver = true;
+        GameManager.Instance.isStart = false;
         // 摄像机停止跟随
         CameraFollow.Instance.StopFollow();
         // 停止下落
-        Map.Instance.StopTileFallDown();
+        GameManager.Instance.map.StopTileFallDown();
         // 结束界面渐变
         GamePanel.Instance.StartEndFade();
     }
 
     private void Move()
     {
-        if (isOver)
+        if (!GameManager.Instance.isStart)
         {
             return;
         }
@@ -136,34 +113,37 @@ public class Player : MonoBehaviour
             CreateMark();
             
             // 增加分数
-            AddScore();
+            GameManager.Instance.AddGameScore();
         }
-
-        if (Input.GetKey(KeyCode.D))
+        else
         {
-            cd += Time.deltaTime;
-            if (cd <= 0.1f) return;
-            cd = 0;
-
-            oldPos = pos;
-            // 向右
-            pos.z++;
-            // 奇数行z-1
-            if (pos.z % 2 != 0)
+            if (Input.GetKey(KeyCode.D))
             {
-                pos.x++;
-            }
+                cd += Time.deltaTime;
+                if (cd <= 0.1f) return;
+                cd = 0;
 
-            if (!MapLimit()) pos = oldPos;
-            CreateMark();
-            AddScore();
+                oldPos = pos;
+                // 向右
+                pos.z++;
+                // 奇数行z-1
+                if (pos.z % 2 != 0)
+                {
+                    pos.x++;
+                }
+
+                if (!MapLimit()) pos = oldPos;
+                CreateMark();
+                GameManager.Instance.AddGameScore();
+            } 
         }
-
-        mapPos = Map.Instance.tilePos[pos.z][pos.x].transform.position;
+        
+        mapPos = GameManager.Instance.map.tilePos[pos.z][pos.x].transform.position;
         transform.position = Vector3.Lerp(transform.position, new Vector3(mapPos.x, transform.position.y, mapPos.z), Time.deltaTime * speed);
         // 空洞掉落
-        if (Map.Instance.tilePos[pos.z][pos.x].CompareTag("Untagged"))
+        if (GameManager.Instance.map.tilePos[pos.z][pos.x].CompareTag("Untagged"))
         {
+            transform.position = GameManager.Instance.map.tilePos[pos.z][pos.x].transform.position;
             playerRigidbody.useGravity = true;
             Dead();
         }
@@ -191,7 +171,7 @@ public class Player : MonoBehaviour
     /// </summary>
     private void CreateMark()
     {
-        GameObject tile = Map.Instance.tilePos[oldPos.z][oldPos.x];
+        GameObject tile = GameManager.Instance.map.tilePos[oldPos.z][oldPos.x];
         GameObject ground;
         // 获取底部砖块
         if (tile.CompareTag("GroundSpike"))

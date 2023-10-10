@@ -41,28 +41,15 @@ public class GamePanel : BasePanel<GamePanel>
         fadeCoroutine = StartCoroutine(EndFade());
     }
 
-    // public void StopEndFade()
-    // {
-    //     StopCoroutine(fadeCoroutine);
-    // }
-
     public IEnumerator EndFade()
     {
-        while (true)
+        while (backGround.color.a <= 0.99f)
         {
-            if (backGround.color.a >= 0.99f)
-            {
-                // 保存数据
-                DataManager.Instance.newDataInfo.score = Player.Instance.score;
-                DataManager.Instance.newDataInfo.gemCount = Player.Instance.gemCount;
-                // 渐变结束进入结束场景
-                SceneManager.LoadScene("EndScene");
-                break;
-            }
-
-            float alpha = backGround.color.a + 0.1f;
+            float alpha = backGround.color.a + Time.deltaTime;
             backGround.color = new Color(backGround.color.r, backGround.color.g, backGround.color.b, alpha);
-            yield return new WaitForSeconds(0.1f);
+            yield return null;
         }
+        // 渐变结束进入结束场景
+        SceneManager.LoadScene("EndScene");
     }
 }
