@@ -9,6 +9,7 @@ public class GamePanel : BasePanel<GamePanel>
     public UILabel scoreLb;
     public UILabel gemLb;
     public UITexture backGround;
+    public GameObject rocker;
 
     // 结束时背景渐变动画
     public Coroutine fadeCoroutine;
@@ -39,6 +40,11 @@ public class GamePanel : BasePanel<GamePanel>
     public void StartEndFade()
     {
         fadeCoroutine = StartCoroutine(EndFade());
+    }
+
+    public void HideRocker()
+    {
+        rocker.SetActive(false);
     }
 
     public IEnumerator EndFade()

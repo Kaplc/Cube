@@ -83,6 +83,8 @@ public class Player : MonoBehaviour
         GameManager.Instance.map.StopTileFallDown();
         // 结束界面渐变
         GamePanel.Instance.StartEndFade();
+        // 隐藏摇杆
+        GamePanel.Instance.HideRocker();
     }
 
     private void Move()
@@ -149,7 +151,50 @@ public class Player : MonoBehaviour
         }
         // transform.position = new Vector3(mapPos.x, transform.position.y, mapPos.z);
     }
+
+    public void MoveRight()
+    {
+        cd += Time.deltaTime;
+        if (cd <= 0.1f) return;
+        cd = 0;
+
+        oldPos = pos;
+        // 向右
+        pos.z++;
+        // 奇数行z-1
+        if (pos.z % 2 != 0)
+        {
+            pos.x++;
+        }
+
+        if (!MapLimit()) pos = oldPos;
+        CreateMark();
+        GameManager.Instance.AddGameScore();
+    }
     
+    public void MoveLeft()
+    {
+        cd += Time.deltaTime;
+        if (cd <= 0.1f) return;
+        cd = 0;
+
+        oldPos = pos;
+        // 向左
+        pos.z++;
+        // 奇数行z-1
+        if (pos.z % 2 == 0)
+        {
+            pos.x--;
+        }
+
+        // 边界判断
+        if (!MapLimit()) pos = oldPos;
+        // 每次移动创建轨迹
+        CreateMark();
+            
+        // 增加分数
+        GameManager.Instance.AddGameScore();
+    }
     /// <summary>
     /// 地图边界
     /// </summary>
