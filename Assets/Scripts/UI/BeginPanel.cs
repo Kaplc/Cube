@@ -7,6 +7,8 @@ public class BeginPanel : BasePanel<BeginPanel>
 {
     public UIButton btnStart;
     public UIButton btnShop;
+    public UIButton btnSetting;
+    public UIButton btnAbout;
     public UILabel lbScore;
     public UILabel lbGem;
 
@@ -27,6 +29,16 @@ public class BeginPanel : BasePanel<BeginPanel>
             GameManager.Instance.player.gameObject.SetActive(false);
             GameManager.Instance.CreateShopMap();
             Hide();
+        }));
+        
+        btnSetting.onClick.Add(new EventDelegate(() =>
+        {
+            SettingPanel.Instance.Show();
+        }));
+        
+        btnAbout.onClick.Add(new EventDelegate(() =>
+        {
+            AboutPanel.Instance.Show();
         }));
         
         // 初始化数据

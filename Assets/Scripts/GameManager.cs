@@ -11,6 +11,7 @@ public class GameManager: MonoBehaviour
     public Map map;
     public ShopMap shopMap;
     public Player player;
+    public BGM bgm;
     
     public int nowCubeID;
     public bool isStart;
@@ -35,6 +36,9 @@ public class GameManager: MonoBehaviour
         nowCubeID = DataManager.Instance.dataInfo.lastChooseCubeID;
         
         CreatePlayer();
+        
+        // 创建BGM
+        bgm = new GameObject("BGM").AddComponent<BGM>();
     }
 
     public void CreatePlayer()

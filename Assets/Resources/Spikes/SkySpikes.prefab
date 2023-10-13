@@ -268,6 +268,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rg: {fileID: -1470701914372638305}
+  mr: {fileID: 6045076878934617897}
+  mrColor: {r: 1, g: 0.48235297, b: 0.52156866, a: 0}
 --- !u!54 &-1470701914372638305
 Rigidbody:
   m_ObjectHideFlags: 0

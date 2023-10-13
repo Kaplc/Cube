@@ -12,7 +12,9 @@ public class Spike : MonoBehaviour
     private Coroutine triggerCoroutine;
     private Coroutine pushCoroutine;
     public Rigidbody rg;
-
+    public MeshRenderer mr;
+    private Color mrColor;
+    
     // 陷阱动画偏移
     private float offSetZ;
     // 陷阱间隔时间
@@ -34,6 +36,8 @@ public class Spike : MonoBehaviour
             triggerCoroutine = StartCoroutine(TriggerSpike());
             // 随机陷阱时间间隔
             cd = Random.Range(0.8f, 2.0f);
+
+            mr.material.color = mrColor;
         }
     }
 
@@ -57,6 +61,8 @@ public class Spike : MonoBehaviour
         triggerCoroutine = StartCoroutine(TriggerSpike());
         // 随机陷阱时间间隔
         cd = Random.Range(0.8f, 2.0f);
+
+        mrColor = mr.material.color;
     }
 
     public void FallDown()
