@@ -101,7 +101,7 @@ public class Map : MonoBehaviour
                 prSkySpike++;
             }
 
-            yield return new WaitForSeconds(0.15f);
+            yield return new WaitForSeconds(1f);
         }
     }
 
